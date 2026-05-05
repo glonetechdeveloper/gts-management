@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glonetech - Events Calendar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --logo-url: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="70" font-size="80" font-weight="bold" text-anchor="middle" fill="%23ffffff">G</text></svg>');
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+            color: #000000;
+            overflow-x: hidden;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideInSidebar {
+            from { opacity: 0; transform: translateX(-100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInDim {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* SIDEBAR */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            animation: fadeInDim 0.3s ease;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #ffffff 0%, #f8f8f8 100%);
+            border-right: 1px solid rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            padding: 25px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-logo-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .sidebar-logo {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 20px;
+            background-image: var(--logo-url);
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .sidebar-close {
+            width: 35px;
+            height: 35px;
+            background: rgba(0, 0, 0, 0.05);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-menu {
+            padding: 25px 10px;
+        }
+
+        .sidebar-item {
+            width: 100%;
+            padding: 14px 15px;
+            background: transparent;
+            border: none;
+            color: #666666;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: left;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(0, 0, 0, 0.08);
+            color: #000000;
+        }
+
+        .sidebar-item.active {
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            color: white;
+        }
+
+        .sidebar-item i {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* LAYOUT */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+            padding: 25px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            animation: fadeUp 0.8s ease;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hamburger-btn {
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            background-image: var(--logo-url);
+            background-size: cover;
+            background-position: center;
+        }
+
+        .greeting {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .greeting-time {
+            font-size: 12px;
+            color: #888888;
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .greeting-text {
+            font-size: 24px;
+            font-weight: 900;
+            margin-top: 3px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-btn {
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+            font-size: 18px;
+        }
+
+        .header-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .header-btn.add {
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            color: white;
+            border: none;
+        }
+
+        /* PAGE CONTENT */
+        .page-content {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 35px;
+            animation: fadeUp 0.8s ease;
+        }
+
+        .page-title-section h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .page-title-section p {
+            font-size: 14px;
+            color: #888888;
+            font-weight: 500;
+        }
+
+        .add-event-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-event-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* EVENTS GRID */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .event-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 25px;
+            padding: 30px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: scaleIn 0.6s ease;
+        }
+
+        .event-card:hover {
+            border-color: rgba(0, 0, 0, 0.2);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .event-date-badge {
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .event-menu-btn {
+            width: 35px;
+            height: 35px;
+            background: rgba(0, 0, 0, 0.05);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .event-menu-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .event-card-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .event-card-description {
+            font-size: 13px;
+            color: #888888;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        .event-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #888888;
+        }
+
+        .event-meta-label {
+            font-weight: 600;
+            color: #000000;
+            min-width: 80px;
+        }
+
+        .event-meta-value {
+            flex: 1;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .event-action-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .event-action-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            animation: fadeUp 0.8s ease;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            color: rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .empty-state-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-text {
+            color: #888888;
+            font-size: 14px;
+        }
+
+        /* FORM STYLES */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #888888;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: #000000;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            background: rgba(0, 0, 0, 0.08);
+            border-color: #000000;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .form-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 13px;
+        }
+
+        .form-btn.submit {
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            color: white;
+        }
+
+        .form-btn.submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-btn.cancel {
+            background: rgba(0, 0, 0, 0.05);
+            color: #000000;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .form-btn.cancel:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        /* NOTIFICATION */
+        .notification {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 300;
+            transition: bottom 0.4s ease;
+            font-weight: 600;
+            max-width: 400px;
+        }
+
+        .notification.show {
+            bottom: 30px;
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ff3b30 0%, #ff1744 100%);
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #888888;
+            font-size: 12px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            margin-top: 50px;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: scaleIn 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 900;
+        }
+
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.05);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-field {
+            margin-bottom: 20px;
+        }
+
+        .modal-label {
+            font-size: 12px;
+            color: #888888;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .modal-value {
+            font-size: 15px;
+            color: #000000;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+            }
+
+            .page-content {
+                padding: 20px;
+            }
+
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .add-event-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px;
+            }
+
+            .page-content {
+                padding: 15px;
+            }
+
+            .event-card {
+                border-radius: 20px;
+                padding: 20px;
+            }
+
+            .modal-content {
+                padding: 25px;
+                border-radius: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR OVERLAY -->
+<div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<div id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo-wrapper">
+            <div class="sidebar-logo"></div>
+            <div class="sidebar-title">Glonetech</div>
+        </div>
+        <button class="sidebar-close" onclick="closeSidebar()">×</button>
+    </div>
+
+    <nav class="sidebar-menu">
+        <button class="sidebar-item" onclick="goToPage('admindashboard')">
+            <i class="fas fa-home"></i> Dashboard
+        </button>
+        <button class="sidebar-item" onclick="goToPage('admintasks')">
+            <i class="fas fa-tasks"></i> Tasks
+        </button>
+        <button class="sidebar-item" onclick="goToPage('finance')">
+            <i class="fas fa-dollar-sign"></i> Finance
+        </button>
+        <button class="sidebar-item active" onclick="goToPage('adminevents')">
+            <i class="fas fa-calendar"></i> Event Calendar
+        </button>
+        <button class="sidebar-item" onclick="goToPage('admincontent')">
+            <i class="fas fa-image"></i> Content Calendar
+        </button>
+        <button class="sidebar-item" onclick="goToPage('admincontributions')">
+            <i class="fas fa-comments"></i> Contributions
+        </button>
+        <button class="sidebar-item" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </nav>
+</div>
+
+<div class="dashboard-layout">
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-left">
+            <button class="hamburger-btn" onclick="openSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo"></div>
+            <div class="greeting">
+                <div class="greeting-time" id="greetingTime">Good Morning</div>
+                <div class="greeting-text">Events</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="header-btn"><i class="fas fa-bell"></i></button>
+            <button class="header-btn"><i class="fas fa-cog"></i></button>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="page-content">
+        <div class="page-header">
+            <div class="page-title-section">
+                <h1>Event Calendar</h1>
+                <p>Manage all company events and meetings</p>
+            </div>
+            <button class="add-event-btn" onclick="openAddEventModal()">
+                <i class="fas fa-plus"></i> Add Event
+            </button>
+        </div>
+
+        <!-- EVENTS GRID -->
+        <div class="events-grid" id="eventsContainer">
+            <!-- Events loaded here -->
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        All rights reserved © Glonetech Solutions
+    </footer>
+</div>
+
+<!-- EVENT DETAILS MODAL -->
+<div id="eventModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="eventModalTitle">Event Details</h2>
+            <button class="modal-close" onclick="closeModal('eventModal')">×</button>
+        </div>
+        <div id="eventModalBody"></div>
+    </div>
+</div>
+
+<!-- ADD EVENT MODAL -->
+<div id="addEventModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Create New Event</h2>
+            <button class="modal-close" onclick="closeModal('addEventModal')">×</button>
+        </div>
+        <form id="addEventForm">
+            <div class="form-group">
+                <label for="addEventName">Event Name</label>
+                <input type="text" id="addEventName" placeholder="Enter event name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="addEventDescription">Description</label>
+                <textarea id="addEventDescription" placeholder="Enter event description" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="addEventDate">Event Date</label>
+                <input type="date" id="addEventDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="addEventTime">Event Time</label>
+                <input type="time" id="addEventTime" required>
+            </div>
+
+            <div class="form-group">
+                <label for="addEventOrganizer">Organizer</label>
+                <input type="text" id="addEventOrganizer" placeholder="Event organizer name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="addEventLocation">Location</label>
+                <input type="text" id="addEventLocation" placeholder="Event location" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="form-btn cancel" onclick="closeModal('addEventModal')">Cancel</button>
+                <button type="button" class="form-btn submit" onclick="saveNewEvent()">Create Event</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div id="notification" class="notification"></div>
+
+<script>
+    let eventsData = [];
+
+    // SIDEBAR FUNCTIONS
+    function openSidebar() {
+        document.getElementById('sidebar').classList.add('show');
+        document.getElementById('sidebarOverlay').classList.add('show');
+    }
+
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('show');
+        document.getElementById('sidebarOverlay').classList.remove('show');
+    }
+
+    // NAVIGATE
+    function goToPage(page) {
+        closeSidebar();
+        // In real implementation: window.location.href = page + '.html';
+    }
+
+    // GET GREETING
+    function getGreeting() {
+        const hour = new Date().getHours();
+        if (hour < 12) return 'Good Morning';
+        if (hour < 18) return 'Good Afternoon';
+        return 'Good Evening';
+    }
+
+    // INIT
+    function init() {
+        document.getElementById('greetingTime').textContent = getGreeting();
+        loadEvents();
+    }
+
+    // LOAD EVENTS
+    // LOAD EVENTS
+    async function loadEvents() {
+        try {
+            const response = await apiRequest('/api/events');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || 'Unable to load events');
+            }
+            const data = response.data || await response.json();
+            eventsData = data.data || data.events || [];
+            
+            const container = document.getElementById('eventsContainer');
+            
+            if (eventsData.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1/-1;">
+                        <div class="empty-state">
+                            <div class="empty-state-icon"><i class="fas fa-calendar-alt"></i></div>
+                            <h3 class="empty-state-title">No Events Yet</h3>
+                            <p class="empty-state-text">Create your first event to get started</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            eventsData.forEach((event, idx) => {
+                const eventDate = new Date(event.date);
+                const dateStr = eventDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+                html += `
+                    <div class="event-card" style="animation-delay: ${idx * 0.1}s;">
+                        <div class="event-card-header">
+                            <span class="event-date-badge">${dateStr}</span>
+                            <button class="event-menu-btn">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+
+                        <h3 class="event-card-title">${event.name}</h3>
+                        <p class="event-card-description">${event.description}</p>
+
+                        <div class="event-meta-row">
+                            <span class="event-meta-label"><i class="fas fa-clock"></i></span>
+                            <span class="event-meta-value">${event.time}</span>
+                        </div>
+
+                        <div class="event-meta-row">
+                            <span class="event-meta-label"><i class="fas fa-user"></i></span>
+                            <span class="event-meta-value">${event.organizer}</span>
+                        </div>
+
+                        <div class="event-meta-row">
+                            <span class="event-meta-label"><i class="fas fa-map-marker-alt"></i></span>
+                            <span class="event-meta-value">${event.location}</span>
+                        </div>
+
+                        <div class="event-actions">
+                            <button class="event-action-btn" onclick="openEventModal('${event.name}', '${event.description}', '${event.date}', '${event.time}', '${event.organizer}', '${event.location}')">
+                                View Details
+                            </button>
+                            <button class="event-action-btn">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="event-action-btn delete-btn" onclick="deleteEvent(${event.id})">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        } catch (error) {
+            console.error('Error loading events:', error);
+            showNotification('Failed to load events', 'error');
+        }
+    }
+
+    // OPEN EVENT MODAL
+    function openEventModal(name, description, date, time, organizer, location) {
+        document.getElementById('eventModalTitle').textContent = name;
+        document.getElementById('eventModalBody').innerHTML = `
+            <div class="modal-field">
+                <div class="modal-label">Description</div>
+                <div class="modal-value">${description}</div>
+            </div>
+            <div class="modal-field">
+                <div class="modal-label">Date</div>
+                <div class="modal-value">${new Date(date).toLocaleDateString()}</div>
+            </div>
+            <div class="modal-field">
+                <div class="modal-label">Time</div>
+                <div class="modal-value">${time}</div>
+            </div>
+            <div class="modal-field">
+                <div class="modal-label">Organizer</div>
+                <div class="modal-value">${organizer}</div>
+            </div>
+            <div class="modal-field">
+                <div class="modal-label">Location</div>
+                <div class="modal-value">${location}</div>
+            </div>
+        `;
+        document.getElementById('eventModal').classList.add('show');
+    }
+
+    // OPEN ADD EVENT MODAL
+    function openAddEventModal() {
+        document.getElementById('addEventModal').classList.add('show');
+    }
+
+    // OPEN EVENT MODAL
+    function openEventModal(name, description, date, time, organizer, location) {
+        document.getElementById('eventModalTitle').textContent = name;
+        document.getElementById('eventModalBody').innerHTML = `
+            <div class="modal-field">
+                <div class="modal-label">Description</div>
+                <div class="modal-value">${description}</div>
+            </div>
+            <div class="modal-field">
+                <div class="modal-label">Date</div>
+                <div class="modal-value">${new Date(date).toLocaleDateString()}</div>
+            </div>
+            <div class="modal-field">
+                <div class="modal-label">Time</div>
+                <div class="modal-value">${time}</div>
+            </div>
+            <div class="modal-field">
+                <div class="modal-label">Organizer</div>
+                <div class="modal-value">${organizer}</div>
+            </div>
+            <div class="modal-field">
+                <div class="modal-label">Location</div>
+                <div class="modal-value">${location}</div>
+            </div>
+        `;
+        document.getElementById('eventModal').classList.add('show');
+    }
+
+    // SAVE NEW EVENT
+    // SAVE NEW EVENT
+    async function saveNewEvent() {
+        const name = document.getElementById('addEventName').value.trim();
+        const description = document.getElementById('addEventDescription').value.trim();
+        const date = document.getElementById('addEventDate').value;
+        const time = document.getElementById('addEventTime').value;
+        const organizer = document.getElementById('addEventOrganizer').value.trim();
+        const location = document.getElementById('addEventLocation').value.trim();
+
+        if (!name || !description || !date || !time || !organizer || !location) {
+            showNotification('Please fill all fields', 'error');
+            return;
+        }
+
+        try {
+            const newEvent = {
+                name,
+                description,
+                date,
+                time,
+                organizer,
+                location
+            };
+
+            const response = await apiRequest('/api/events', 'POST', newEvent);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || 'Failed to create event');
+            }
+            
+            // Clear form
+            document.getElementById('addEventForm').reset();
+            closeModal('addEventModal');
+            await loadEvents();
+            showNotification('Event created successfully!', 'success');
+        } catch (error) {
+            console.error('Error creating event:', error);
+            showNotification('Failed to create event', 'error');
+        }
+    }
+
+    // DELETE EVENT
+    async function deleteEvent(id) {
+        if (!confirm('Are you sure you want to delete this event?')) {
+            return;
+        }
+
+        try {
+            await apiRequest(`/api/events/${id}`, 'DELETE');
+            await loadEvents();
+            showNotification('Event deleted successfully!', 'success');
+        } catch (error) {
+            console.error('Error deleting event:', error);
+            showNotification('Failed to delete event', 'error');
+        }
+    }
+
+    // SHOW NOTIFICATION
+    function showNotification(message, type = 'info') {
+        const notification = document.getElementById('notification');
+        notification.textContent = message;
+        notification.className = `notification ${type} show`;
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 4000);
+    }
+
+
+    //logout
+    //function logout() {
+    // Optional: clear session/local storage
+    //localStorage.clear();
+    //sessionStorage.clear();
+
+    // Prevent going back
+    //window.location.replace('index.html');
+    //}
+
+    // Run on page load
+    //if (!localStorage.getItem('isLoggedIn')) {
+    //window.location.replace('index.html');
+    //}
+
+    //localStorage.setItem('isLoggedIn', 'true');
+    //window.location.href = 'admindashboard.html';
+
+
+
+    function goToPage(page) {
+    closeSidebar();
+
+    setTimeout(() => {
+        window.location.href = page + '.html';
+    }, 300);
+    }
+
+    function logout() {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.replace('index.html');
+    }
+
+    // CLOSE MODAL
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('show');
+    }
+
+    // CLOSE MODAL ON OUTSIDE CLICK
+    window.addEventListener('click', (e) => {
+        const modal = document.getElementById('eventModal');
+        if (e.target === modal) {
+            modal.classList.remove('show');
+        }
+    });
+
+    // INIT ON LOAD
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+<script src="api.js"></script>
+
+</body>
+</html>
