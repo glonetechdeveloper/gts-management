@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glonetech - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f0f0 0%, #ffffff 100%);
+            color: #000000;
+            overflow-x: hidden;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* CONTAINER */
+        .auth-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+        }
+
+        /* LEFT */
+        .auth-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 40px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+        }
+
+        .brand-content {
+            max-width: 500px;
+            animation: slideInLeft 0.8s ease;
+        }
+
+        .brand-logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 40px;
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 50px;
+            font-weight: 900;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .brand-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: slideInLeft 0.8s ease 0.1s both;
+        }
+
+        .brand-subtitle {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            color: #666666;
+            margin-bottom: 50px;
+            text-align: center;
+            animation: slideInLeft 0.8s ease 0.2s both;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .brand-features {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeUp 1s ease 0.3s both;
+        }
+
+        .feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .feature-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .feature-text h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .feature-text p {
+            font-size: 12px;
+            color: #888888;
+            line-height: 1.4;
+        }
+
+        /* RIGHT */
+        .auth-right {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 40px;
+            background: linear-gradient(135deg, #f0f0f0 0%, #ffffff 100%);
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .form-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            animation: slideInRight 0.8s ease;
+        }
+
+        .form-subtitle {
+            font-size: 14px;
+            color: #888888;
+            animation: slideInRight 0.8s ease 0.1s both;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+            animation: slideInRight 0.8s ease;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.15s; }
+        .form-group:nth-child(3) { animation-delay: 0.2s; }
+        .form-group:nth-child(4) { animation-delay: 0.25s; }
+        .form-group:nth-child(5) { animation-delay: 0.3s; }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #000000;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1.5px solid rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: #000000;
+            transition: all 0.4s ease;
+        }
+
+        .form-input::placeholder {
+            color: #aaaaaa;
+        }
+
+        .form-input:focus {
+            outline: none;
+            background: rgba(0, 0, 0, 0.08);
+            border-color: #000000;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* BUTTONS */
+        .btn {
+            width: 100%;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 15px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-google {
+            background: white;
+            color: #000000;
+            border: 1.5px solid rgba(0, 0, 0, 0.1);
+            animation: slideInRight 0.8s ease 0.4s both;
+        }
+
+        .btn-google:hover {
+            background: #f5f5f5;
+            border-color: #000000;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            animation: fadeUp 0.8s ease 0.45s both;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .divider-text {
+            padding: 0 15px;
+            font-size: 12px;
+            color: #888888;
+            font-weight: 500;
+        }
+
+        .form-toggle {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #888888;
+            animation: slideInRight 0.8s ease 0.5s both;
+        }
+
+        .form-toggle button {
+            background: none;
+            border: none;
+            color: #000000;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 13px;
+        }
+
+        .form-toggle button:hover {
+            color: #666666;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            display: none;
+            animation: slideInRight 0.4s ease;
+            border-left: 4px solid #c62828;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 10px;
+            right: 20px;
+            font-size: 11px;
+            color: #888888;
+            z-index: 10;
+        }
+
+        @media (max-width: 1024px) {
+            .auth-container {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-left {
+                padding: 40px 30px;
+                min-height: 50vh;
+            }
+
+            .auth-right {
+                padding: 40px 30px;
+                min-height: 50vh;
+            }
+
+            .brand-title {
+                font-size: 36px;
+            }
+
+            .brand-features {
+                display: none;
+            }
+
+            .form-title {
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .auth-left {
+                padding: 30px 20px;
+                min-height: 40vh;
+            }
+
+            .auth-right {
+                padding: 30px 20px;
+                min-height: 60vh;
+            }
+
+            .brand-logo {
+                width: 80px;
+                height: 80px;
+                font-size: 40px;
+                margin-bottom: 30px;
+            }
+
+            .brand-title {
+                font-size: 28px;
+            }
+
+            .form-title {
+                font-size: 22px;
+            }
+
+            .form-input {
+                padding: 12px 16px;
+                font-size: 13px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <!-- LEFT -->
+    <div class="auth-left">
+        <div class="brand-content">
+            <div class="brand-logo">G</div>
+            <h1 class="brand-title">Glonetech</h1>
+            <p class="brand-subtitle">Streamline your workflow. Empower your team. Achieve more together.</p>
+
+            <div class="brand-features">
+                <div class="feature">
+                    <div class="feature-icon"><i class="fas fa-check"></i></div>
+                    <div class="feature-text">
+                        <h4>Smart Task Management</h4>
+                        <p>Organize and track tasks with precision</p>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="feature-text">
+                        <h4>Financial Insights</h4>
+                        <p>Monitor cash flow in real-time</p>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon"><i class="fas fa-users"></i></div>
+                    <div class="feature-text">
+                        <h4>Team Collaboration</h4>
+                        <p>Work seamlessly with your team</p>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon"><i class="fas fa-calendar"></i></div>
+                    <div class="feature-text">
+                        <h4>Event Planning</h4>
+                        <p>Schedule and manage events effortlessly</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="auth-right">
+        <div class="form-container">
+            <!-- LOGIN -->
+            <div id="loginForm">
+                <div class="form-header">
+                    <h2 class="form-title">Welcome Back</h2>
+                    <p class="form-subtitle">Sign in to continue</p>
+                </div>
+
+                <div id="loginError" class="error-message"></div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="loginEmail" class="form-input" placeholder="you@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="••••••••">
+                </div>
+
+                <button class="btn btn-primary" onclick="handleLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+
+                <button class="btn btn-google">
+                    <i class="fab fa-google"></i> Continue with Google
+                </button>
+
+                <div class="form-divider">
+                    <div class="divider-line"></div>
+                    <span class="divider-text">New to Glonetech?</span>
+                    <div class="divider-line"></div>
+                </div>
+
+                <div class="form-toggle">
+                    Don't have an account? <button onclick="switchForm('signup')">Create Account</button>
+                </div>
+            </div>
+
+            <!-- SIGNUP -->
+            <div id="signupForm" style="display: none;">
+                <div class="form-header">
+                    <h2 class="form-title">Join Us</h2>
+                    <p class="form-subtitle">Create your account</p>
+                </div>
+
+                <div id="signupError" class="error-message"></div>
+
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="signupName" class="form-input" placeholder="John Doe">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="signupEmail" class="form-input" placeholder="you@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="signupPassword" class="form-input" placeholder="••••••••">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" id="signupConfirm" class="form-input" placeholder="••••••••">
+                </div>
+
+                <button class="btn btn-primary" onclick="handleSignup()">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+
+                <button class="btn btn-google">
+                    <i class="fab fa-google"></i> Sign Up with Google
+                </button>
+
+                <div class="form-divider">
+                    <div class="divider-line"></div>
+                    <span class="divider-text">Already have an account?</span>
+                    <div class="divider-line"></div>
+                </div>
+
+                <div class="form-toggle">
+                    Have an account? <button onclick="switchForm('login')">Sign In</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>All rights reserved © Glonetech Solutions</footer>
+
+<script src="api.js"></script>
+<script>
+    function switchForm(form) {
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        
+        if (form === 'signup') {
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+        } else {
+            signupForm.style.display = 'none';
+            loginForm.style.display = 'block';
+        }
+    }
+
+    function showError(elementId, message) {
+        const element = document.getElementById(elementId);
+        element.textContent = message;
+        element.classList.add('show');
+    }
+
+    function clearErrors() {
+        document.getElementById('loginError').classList.remove('show');
+        document.getElementById('signupError').classList.remove('show');
+    }
+
+    async function handleLogin() {
+        clearErrors();
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+
+        if (!email || !password) {
+            showError('loginError', 'Please enter your email and password');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE}/api/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            });
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                showError('loginError', result.detail || result.message || 'Login failed');
+                return;
+            }
+
+            localStorage.setItem('token', result.token);
+            localStorage.setItem('refresh_token', result.refresh_token);
+            localStorage.setItem('user', JSON.stringify(result.user));
+
+            if (result.user.role === 'admin') {
+                window.location.href = 'admindashboard.html';
+            } else {
+                window.location.href = 'dashboard.html';
+            }
+        } catch (error) {
+            showError('loginError', 'Unable to connect to the server');
+        }
+    }
+
+    async function handleSignup() {
+        clearErrors();
+        const name = document.getElementById('signupName').value.trim();
+        const email = document.getElementById('signupEmail').value.trim();
+        const password = document.getElementById('signupPassword').value;
+        const confirm = document.getElementById('signupConfirm').value;
+
+        if (!name || !email || !password || !confirm) {
+            showError('signupError', 'Please fill all fields');
+            return;
+        }
+
+        if (password !== confirm) {
+            showError('signupError', 'Passwords do not match');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE}/api/auth/signup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ full_name: name, email, password, confirm_password: confirm }),
+            });
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                showError('signupError', result.detail || result.message || 'Signup failed');
+                return;
+            }
+
+            localStorage.setItem('token', result.token);
+            localStorage.setItem('refresh_token', result.refresh_token);
+            localStorage.setItem('user', JSON.stringify(result.user));
+
+            showNotification('Account created successfully!', 'success');
+
+            setTimeout(() => {
+                if (result.user.role === 'admin') {
+                    window.location.href = 'admindashboard.html';
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
+            }, 1000);
+        } catch (error) {
+            showError('signupError', 'Unable to connect to the server');
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glonetech - Contributions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --logo-url: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="70" font-size="80" font-weight="bold" text-anchor="middle" fill="%23ffffff">G</text></svg>');
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+            color: #000000;
+            overflow-x: hidden;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideInSidebar {
+            from { opacity: 0; transform: translateX(-100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInDim {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInMessage {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* SIDEBAR */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            animation: fadeInDim 0.3s ease;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #ffffff 0%, #f8f8f8 100%);
+            border-right: 1px solid rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;            
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            padding: 25px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-logo-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .sidebar-logo {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 20px;
+            background-image: var(--logo-url);
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .sidebar-close {
+            width: 35px;
+            height: 35px;
+            background: rgba(0, 0, 0, 0.05);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-menu {
+            padding: 25px 10px;
+        }
+
+        .sidebar-item {
+            width: 100%;
+            padding: 14px 15px;
+            background: transparent;
+            border: none;
+            color: #666666;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: left;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(0, 0, 0, 0.08);
+            color: #000000;
+        }
+
+        .sidebar-item.active {
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            color: white;
+        }
+
+        .sidebar-item i {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* LAYOUT */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+            padding: 25px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            animation: fadeUp 0.8s ease;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hamburger-btn {
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            background-image: var(--logo-url);
+            background-size: cover;
+            background-position: center;
+        }
+
+        .greeting {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .greeting-time {
+            font-size: 12px;
+            color: #888888;
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .greeting-text {
+            font-size: 24px;
+            font-weight: 900;
+            margin-top: 3px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-btn {
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+            font-size: 18px;
+        }
+
+        .header-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* PAGE CONTENT */
+        .page-content {
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 140px);
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+            animation: fadeUp 0.8s ease;
+        }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #888888;
+            font-weight: 500;
+        }
+
+        /* CHAT CONTAINER */
+        .chat-container {
+            flex: 1;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: scaleIn 0.6s ease;
+        }
+
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .messages-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .messages-area::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .messages-area::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            animation: slideInMessage 0.4s ease;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .message-author {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #888888;
+        }
+
+        .message-text {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 12px 16px;
+            border-radius: 15px;
+            word-break: break-word;
+            line-height: 1.5;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            animation: fadeUp 0.8s ease;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            color: rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .empty-state-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-text {
+            color: #888888;
+            font-size: 14px;
+        }
+
+        /* INPUT AREA */
+        .input-area {
+            padding: 25px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            display: flex;
+            gap: 12px;
+        }
+
+        .input-field {
+            flex: 1;
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-field input {
+            flex: 1;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: #000000;
+            transition: all 0.3s ease;
+        }
+
+        .input-field input:focus {
+            outline: none;
+            background: rgba(0, 0, 0, 0.08);
+            border-color: #000000;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .input-field input::placeholder {
+            color: #888888;
+        }
+
+        .send-btn {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            color: white;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .send-btn:active {
+            transform: translateY(0);
+        }
+
+        /* NOTIFICATION */
+        .notification {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 300;
+            transition: bottom 0.4s ease;
+            font-weight: 600;
+            max-width: 400px;
+        }
+
+        .notification.show {
+            bottom: 30px;
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ff3b30 0%, #ff1744 100%);
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 15px;
+            color: #888888;
+            font-size: 12px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+            }
+
+            .page-content {
+                padding: 20px;
+                height: auto;
+            }
+
+            .chat-container {
+                min-height: 500px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px;
+            }
+
+            .page-content {
+                padding: 15px;
+            }
+
+            .messages-area {
+                padding: 20px;
+            }
+
+            .input-area {
+                padding: 15px;
+                flex-direction: column;
+            }
+
+            .input-field {
+                flex-direction: column;
+            }
+
+            .input-field input {
+                width: 100%;
+            }
+
+            .send-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR OVERLAY -->
+<div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<div id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo-wrapper">
+            <div class="sidebar-logo"></div>
+            <div class="sidebar-title">Glonetech</div>
+        </div>
+        <button class="sidebar-close" onclick="closeSidebar()">×</button>
+    </div>
+
+    <nav class="sidebar-menu">
+        <button class="sidebar-item" onclick="goToPage('dashboard')">
+            <i class="fas fa-home"></i> Dashboard
+        </button>
+        <button class="sidebar-item" onclick="goToPage('tasks')">
+            <i class="fas fa-tasks"></i> Tasks
+        </button>
+        <button class="sidebar-item" onclick="goToPage('events')">
+            <i class="fas fa-calendar"></i> Event Calendar
+        </button>
+        <button class="sidebar-item" onclick="goToPage('content')">
+            <i class="fas fa-image"></i> Content Calendar
+        </button>
+        <button class="sidebar-item active" onclick="goToPage('contributions')">
+            <i class="fas fa-comments"></i> Contributions
+        </button>
+         <button class="sidebar-item" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </nav>
+</div>
+
+<div class="dashboard-layout">
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-left">
+            <button class="hamburger-btn" onclick="openSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo"></div>
+            <div class="greeting">
+                <div class="greeting-time" id="greetingTime">Good Morning</div>
+                <div class="greeting-text">Contributions</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="header-btn"><i class="fas fa-bell"></i></button>
+            <button class="header-btn"><i class="fas fa-cog"></i></button>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="page-content">
+        <div class="page-header">
+            <h1 class="page-title">Team Contributions</h1>
+            <p class="page-subtitle">Share ideas and collaborate with your team</p>
+        </div>
+
+        <!-- CHAT CONTAINER -->
+        <div class="chat-container">
+            <!-- MESSAGES AREA -->
+            <div class="messages-area" id="messagesArea">
+                <!-- Messages loaded here -->
+            </div>
+
+            <!-- INPUT AREA -->
+            <div class="input-area">
+                <div class="input-field">
+                    <input type="text" id="messageInput" placeholder="Share your contribution..." />
+                    <button class="send-btn" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        All rights reserved © Glonetech Solutions
+    </footer>
+</div>
+
+<!-- NOTIFICATION -->
+<div id="notification" class="notification"></div>
+
+<script>
+    let contributionsData = [];
+
+    // SIDEBAR FUNCTIONS
+    function openSidebar() {
+        document.getElementById('sidebar').classList.add('show');
+        document.getElementById('sidebarOverlay').classList.add('show');
+    }
+
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('show');
+        document.getElementById('sidebarOverlay').classList.remove('show');
+    }
+
+    // NAVIGATE
+    function goToPage(page) {
+        closeSidebar();
+        window.location.href = page + '.html';
+    }
+
+    // GET GREETING
+    function getGreeting() {
+        const hour = new Date().getHours();
+        if (hour < 12) return 'Good Morning';
+        if (hour < 18) return 'Good Afternoon';
+        return 'Good Evening';
+    }
+
+    // INIT
+    function init() {
+        document.getElementById('greetingTime').textContent = getGreeting();
+        loadMessages();
+        
+        // Scroll to bottom on load
+        setTimeout(() => {
+            const messagesArea = document.getElementById('messagesArea');
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }, 100);
+    }
+
+    // LOAD MESSAGES
+    async function loadMessages() {
+        try {
+            const response = await apiRequest('/api/contributions');
+            if (!response.ok) {
+                throw new Error('Unable to load contributions');
+            }
+            const data = response.data || await response.json();
+            contributionsData = data.data || [];
+            const contributionsToRender = [...contributionsData].reverse();
+            
+            const container = document.getElementById('messagesArea');
+            
+            if (contributionsToRender.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i class="fas fa-comments"></i></div>
+                        <h3 class="empty-state-title">No Contributions Yet</h3>
+                        <p class="empty-state-text">Start the conversation by sharing your first contribution</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            contributionsToRender.forEach(contribution => {
+                const timestamp = contribution.created_at ? new Date(contribution.created_at).toLocaleString() : 'Unknown time';
+                html += `
+                    <div class="message">
+                        <div class="message-avatar">${contribution.author?.initials || 'U'}</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author">${contribution.author?.name || 'Unknown'}</span>
+                                <span class="message-time">${timestamp}</span>
+                            </div>
+                            <div class="message-text">${contribution.message}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        } catch (error) {
+            console.error('Error loading contributions:', error);
+            showNotification('Failed to load contributions', 'error');
+        }
+    }
+
+    // SEND MESSAGE
+    async function sendMessage() {
+        const input = document.getElementById('messageInput');
+        const message = input.value.trim();
+
+        if (!message) {
+            showNotification('Please enter a message', 'error');
+            return;
+        }
+
+        try {
+            const user = getUser();
+            if (!user) {
+                showNotification('User not authenticated', 'error');
+                return;
+            }
+
+            const newContribution = {
+                author: user.username || user.email,
+                message: message
+            };
+
+            await apiRequest('/api/contributions', 'POST', newContribution);
+            
+            input.value = '';
+            await loadMessages();
+            
+            // Scroll to bottom
+            setTimeout(() => {
+                const messagesArea = document.getElementById('messagesArea');
+                messagesArea.scrollTop = messagesArea.scrollHeight;
+            }, 50);
+
+            showNotification('Contribution posted successfully!', 'success');
+        } catch (error) {
+            console.error('Error posting contribution:', error);
+            showNotification('Failed to post contribution', 'error');
+        }
+    }
+
+    // SHOW NOTIFICATION
+    function showNotification(message, type = 'info') {
+        const notification = document.getElementById('notification');
+        notification.textContent = message;
+        notification.className = `notification ${type} show`;
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 4000);
+    }
+
+    // ALLOW ENTER TO SEND
+    document.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && e.target.id === 'messageInput') {
+            sendMessage();
+        }
+    });
+
+    // INIT ON LOAD
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+<script src="api.js"></script>
+
+</body>
+</html>

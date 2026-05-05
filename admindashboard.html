@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glonetech - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* CONFIGURATION - CUSTOMIZE YOUR LOGO HERE */
+        :root {
+            --logo-url: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="70" font-size="80" font-weight="bold" text-anchor="middle" fill="%23ffffff">G</text></svg>');
+            /* To use your own logo image, replace the above with:
+               --logo-url: url('/path/to/your/logo.png');
+               Make sure to adjust logo width/height as needed */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+            color: #000000;
+            overflow-x: hidden;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideInSidebar {
+            from { opacity: 0; transform: translateX(-100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInDim {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideOutRight {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(40px); }
+        }
+
+        /* SIDEBAR */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            animation: fadeInDim 0.3s ease;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #ffffff 0%, #f8f8f8 100%);
+            border-right: 1px solid rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            padding: 25px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-logo-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .sidebar-logo {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 20px;
+            background-image: var(--logo-url);
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .sidebar-close {
+            width: 35px;
+            height: 35px;
+            background: rgba(0, 0, 0, 0.05);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-menu {
+            padding: 25px 10px;
+        }
+
+        .sidebar-item {
+            width: 100%;
+            padding: 14px 15px;
+            background: transparent;
+            border: none;
+            color: #666666;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: left;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(0, 0, 0, 0.08);
+            color: #000000;
+        }
+
+        .sidebar-item.active {
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            color: white;
+        }
+
+        .sidebar-item i {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* LAYOUT */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+            padding: 25px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            animation: fadeUp 0.8s ease;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hamburger-btn {
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            background-image: var(--logo-url);
+            background-size: cover;
+            background-position: center;
+        }
+
+        .greeting {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .greeting-time {
+            font-size: 12px;
+            color: #888888;
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .greeting-text {
+            font-size: 24px;
+            font-weight: 900;
+            margin-top: 3px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-btn {
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+            font-size: 18px;
+        }
+
+        .header-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* PAGE CONTENT */
+        .page-content {
+            padding: 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* SECTION */
+        .section {
+            margin-bottom: 50px;
+            animation: fadeUp 0.8s ease;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 900;
+        }
+
+        .section-view-more {
+            font-size: 13px;
+            color: #000000;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-view-more:hover {
+            gap: 12px;
+        }
+
+        /* CARDS HORIZONTAL */
+        .cards-horizontal {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 25px;
+            padding: 25px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            animation: scaleIn 0.6s ease;
+            flex-shrink: 0;
+            min-width: 300px;
+        }
+
+        .card:hover {
+            border-color: rgba(0, 0, 0, 0.2);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        /* TASK CARD */
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .task-priority {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .priority-high {
+            background: rgba(255, 59, 48, 0.2);
+            color: #ff3b30;
+        }
+
+        .priority-medium {
+            background: rgba(255, 149, 0, 0.2);
+            color: #ff9500;
+        }
+
+        .priority-low {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .task-status {
+            font-size: 11px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: rgba(255, 149, 0, 0.2);
+            color: #ff9500;
+        }
+
+        .status-in-progress {
+            background: rgba(0, 122, 255, 0.2);
+            color: #007aff;
+        }
+
+        .status-completed {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .task-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .task-assigned {
+            font-size: 12px;
+            color: #888888;
+            margin-bottom: 8px;
+        }
+
+        .task-deadline {
+            font-size: 12px;
+            color: #888888;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .task-more-btn {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #000000;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .task-more-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-title {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-text {
+            color: #999;
+        }
+
+        /* FINANCE CARD */
+        .finance-type {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .finance-income {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .finance-expense {
+            background: rgba(255, 59, 48, 0.2);
+            color: #ff3b30;
+        }
+
+        .finance-amount {
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .finance-detail {
+            font-size: 12px;
+            color: #888888;
+            margin-bottom: 8px;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #888888;
+            font-size: 12px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            margin-top: 50px;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: scaleIn 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 900;
+        }
+
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.05);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-field {
+            margin-bottom: 20px;
+        }
+
+        .modal-label {
+            font-size: 12px;
+            color: #888888;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .modal-value {
+            font-size: 15px;
+            color: #000000;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+            }
+
+            .page-content {
+                padding: 20px;
+            }
+
+            .cards-horizontal {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 20px;
+            }
+
+            .greeting-text {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px;
+            }
+
+            .page-content {
+                padding: 15px;
+            }
+
+            .card {
+                border-radius: 20px;
+                padding: 20px;
+                min-width: 100%;
+            }
+
+            .cards-horizontal {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 25px;
+                border-radius: 20px;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR OVERLAY -->
+<div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<div id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo-wrapper">
+            <div class="sidebar-logo"></div>
+            <div class="sidebar-title">Glonetech</div>
+        </div>
+        <button class="sidebar-close" onclick="closeSidebar()">×</button>
+    </div>
+
+    <nav class="sidebar-menu">
+        <button class="sidebar-item active" onclick="goToPage('admindashboard')">
+            <i class="fas fa-home"></i> Dashboard
+        </button>
+        <button class="sidebar-item" onclick="goToPage('admintasks')">
+            <i class="fas fa-tasks"></i> Tasks
+        </button>
+        <button class="sidebar-item" onclick="goToPage('finance')">
+            <i class="fas fa-dollar-sign"></i> Finance
+        </button>
+        <button class="sidebar-item" onclick="goToPage('adminevents')">
+            <i class="fas fa-calendar"></i> Event Calendar
+        </button>
+        <button class="sidebar-item" onclick="goToPage('admincontent')">
+            <i class="fas fa-image"></i> Content Calendar
+        </button>
+        <button class="sidebar-item" onclick="goToPage('admincontributions')">
+            <i class="fas fa-comments"></i> Contributions
+        </button>
+        <button class="sidebar-item" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </nav>
+</div>
+
+<div class="dashboard-layout">
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-left">
+            <button class="hamburger-btn" onclick="openSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo"></div>
+            <div class="greeting">
+                <div class="greeting-time" id="greetingTime">Good Morning</div>
+                <div class="greeting-text" id="greetingName">Welcome back!</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="header-btn"><i class="fas fa-bell"></i></button>
+            <button class="header-btn"><i class="fas fa-cog"></i></button>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="page-content">
+        <!-- ASSIGNED TASKS SECTION -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Assigned Tasks</h2>
+                <span class="section-view-more" onclick="goToPage('admintasks')">View All <i class="fas fa-arrow-right"></i></span>
+            </div>
+            <div class="cards-horizontal" id="tasksContainer">
+                <!-- Tasks loaded here -->
+            </div>
+        </section>
+
+        <!-- FINANCE SECTION -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Recent Transactions</h2>
+                <span class="section-view-more" onclick="goToPage('finance')">View All <i class="fas fa-arrow-right"></i></span>
+            </div>
+            <div class="cards-horizontal" id="financeContainer">
+                <!-- Finance loaded here -->
+            </div>
+        </section>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        All rights reserved © Glonetech Solutions
+    </footer>
+</div>
+
+<!-- TASK DETAILS MODAL -->
+<div id="taskModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="taskModalTitle">Task Details</h2>
+            <button class="modal-close" onclick="closeModal('taskModal')">×</button>
+        </div>
+        <div id="taskModalBody"></div>
+    </div>
+</div>
+
+<script>
+    // SIDEBAR FUNCTIONS
+    function openSidebar() {
+        document.getElementById('sidebar').classList.add('show');
+        document.getElementById('sidebarOverlay').classList.add('show');
+    }
+
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('show');
+        document.getElementById('sidebarOverlay').classList.remove('show');
+    }
+
+    // NAVIGATE
+    function goToPage(page) {
+        closeSidebar();
+        alert(`Navigate to ${page} page`);
+        // In real implementation: window.location.href = page + '.html';
+    }
+
+    // GET GREETING
+    function getGreeting() {
+        const hour = new Date().getHours();
+        if (hour < 12) return 'Good Morning';
+        if (hour < 18) return 'Good Afternoon';
+        return 'Good Evening';
+    }
+
+    // INIT
+    function init() {
+        document.getElementById('greetingTime').textContent = getGreeting();
+        loadTasks();
+        loadFinance();
+    }
+
+    // LOAD TASKS
+    async function loadTasks() {
+        try {
+            const user = getUser();
+            if (!user) {
+                document.getElementById('tasksContainer').innerHTML = '<div class="empty-state"><p>Please log in to view tasks.</p></div>';
+                return;
+            }
+
+            let url = '/api/tasks';
+            if (user.role !== 'admin') {
+                url += `?assigned_to_id=${user.id}`;
+            }
+
+            const response = await apiRequest(url);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || 'Unable to load tasks');
+            }
+
+            const data = await response.json();
+            const tasks = data.data || [];
+
+            const container = document.getElementById('tasksContainer');
+
+            if (tasks.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1/-1;">
+                        <div class="empty-state">
+                            <div class="empty-state-icon"><i class="fas fa-tasks"></i></div>
+                            <h3 class="empty-state-title">No Tasks Yet</h3>
+                            <p class="empty-state-text">No tasks assigned</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const currentUser = getUser();
+            let html = '';
+            tasks.forEach((task, idx) => {
+                const priorityClass = `priority-${task.priority}`;
+                const statusClass = `status-${task.status}`;
+                const deadline = task.deadline ? new Date(task.deadline).toLocaleDateString() : 'No deadline';
+                const isAssignedToMe = currentUser && Number(task.assigned_to?.id) === Number(currentUser.id);
+                
+                let actionButtons = '';
+                if (isAssignedToMe) {
+                    if (task.status === 'pending') {
+                        actionButtons = `<button class="task-more-btn" onclick="beginTask(${task.id})" style="background: rgba(33, 150, 243, 0.1); color: #2196f3; margin-top: 8px;"><i class="fas fa-play"></i> Begin Task</button>`;
+                    } else if (task.status === 'in_progress') {
+                        actionButtons = `<button class="task-more-btn" onclick="completeTask(${task.id})" style="background: rgba(76, 175, 80, 0.1); color: #4caf50; margin-top: 8px;"><i class="fas fa-check"></i> Mark Complete</button>`;
+                    }
+                }
+
+                html += `
+                    <div class="card" style="animation-delay: ${idx * 0.1}s;">
+                        <div class="task-header">
+                            <span class="task-priority ${priorityClass}">${task.priority.toUpperCase()}</span>
+                            <span class="task-status ${statusClass}">${task.status.replace('_', ' ').toUpperCase()}</span>
+                        </div>
+                        <h3 class="task-title">${task.title}</h3>
+                        <div class="task-assigned">Assigned to: ${task.assigned_to.name}</div>
+                        <div class="task-deadline"><i class="fas fa-calendar"></i> ${deadline}</div>
+                        <button class="task-more-btn" onclick="openTaskModal('${task.title.replace(/'/g, "\\'")}', '${(task.description || '').replace(/'/g, "\\'")}', '${task.assigned_to.name.replace(/'/g, "\\'")}', '${deadline}', '${task.priority}', '${task.status}')">More Details</button>
+                        ${actionButtons}
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        } catch (error) {
+            console.error('Error loading tasks:', error);
+            showNotification('Failed to load tasks', 'error');
+        }
+    }
+
+    // LOAD FINANCE
+    async function loadFinance() {
+        try {
+            const response = await apiRequest('/api/finance');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || 'Unable to load finance data');
+            }
+
+            const data = await response.json();
+            let transactions = [];
+            if (data.data.income) {
+                transactions = transactions.concat(data.data.income.map(t => ({ ...t, type: 'income' })));
+            }
+            if (data.data.expense) {
+                transactions = transactions.concat(data.data.expense.map(t => ({ ...t, type: 'expense' })));
+            }
+            transactions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            const container = document.getElementById('financeContainer');
+
+            if (transactions.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1/-1;">
+                        <div class="empty-state">
+                            <div class="empty-state-icon"><i class="fas fa-dollar-sign"></i></div>
+                            <h3 class="empty-state-title">No Transactions Yet</h3>
+                            <p class="empty-state-text">No financial transactions recorded</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Take the most recent 3 transactions
+            const recentTransactions = transactions.slice(0, 3);
+
+            let html = '';
+            recentTransactions.forEach((transaction, idx) => {
+                const typeClass = transaction.type === 'income' ? 'finance-income' : 'finance-expense';
+                const typeLabel = transaction.type === 'income' ? 'Income' : 'Expense';
+                
+                // Format amount
+                const amount = parseFloat(transaction.amount).toLocaleString('en-NG', {
+                    style: 'currency',
+                    currency: 'NGN',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                }).replace('NGN', '₦');
+
+                let detail1 = '';
+                let detail2 = '';
+                let detail3 = '';
+
+                if (transaction.type === 'income') {
+                    detail1 = transaction.payment_details || 'N/A';
+                    detail2 = `<strong>Client:</strong> ${transaction.client_name || 'N/A'}`;
+                    detail3 = `<strong>Date:</strong> ${transaction.date_paid ? new Date(transaction.date_paid).toLocaleDateString() : 'N/A'}`;
+                } else {
+                    detail1 = transaction.expense_details || 'N/A';
+                    detail2 = `<strong>Category:</strong> ${transaction.category || 'N/A'}`;
+                    detail3 = `<strong>Date:</strong> ${transaction.date_spent ? new Date(transaction.date_spent).toLocaleDateString() : 'N/A'}`;
+                }
+
+                html += `
+                    <div class="card" style="animation-delay: ${idx * 0.1}s;">
+                        <span class="finance-type ${typeClass}">${typeLabel}</span>
+                        <div class="finance-amount">${amount}</div>
+                        <div class="finance-detail">${detail1}</div>
+                        <div class="finance-detail">${detail2}</div>
+                        <div class="finance-detail">${detail3}</div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        } catch (error) {
+            console.error('Error loading finance:', error);
+            showNotification('Failed to load finance data', 'error');
+        }
+    }
+
+    // OPEN TASK MODAL
+    function openTaskModal(title, description, assignedTo, deadline, priority, status) {
+        document.getElementById('taskModalTitle').textContent = title;
+        document.getElementById('taskModalBody').innerHTML = `
+            <div class="modal-field">
+                <div class="modal-label">Description</div>
+                <div class="modal-value">${description}</div>
+            </div>
+            <div class="modal-field">
+                <div class="modal-label">Assigned To</div>
+                <div class="modal-value">${assignedTo}</div>
+            </div>
+            <div class="modal-field">
+                <div class="modal-label">Deadline</div>
+                <div class="modal-value">${deadline}</div>
+            </div>
+            <div class="modal-field">
+                <div class="modal-label">Priority</div>
+                <div class="modal-value">${priority}</div>
+            </div>
+            <div class="modal-field">
+                <div class="modal-label">Status</div>
+                <div class="modal-value">${status}</div>
+            </div>
+        `;
+        document.getElementById('taskModal').classList.add('show');
+    }
+
+    // BEGIN TASK
+    async function beginTask(taskId) {
+        try {
+            const response = await apiRequest(`/api/tasks/${taskId}/begin`, 'PUT');
+            if (!response) return;
+            const result = response.data || {};
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || 'Failed to begin task');
+            }
+            await loadTasks();
+            closeModal('taskModal');
+            showNotification('Task started! Status changed to In Progress', 'success');
+        } catch (error) {
+            console.error('Error beginning task:', error);
+            showNotification(error.message || 'Could not begin task', 'error');
+        }
+    }
+
+    // COMPLETE TASK
+    async function completeTask(taskId) {
+        try {
+            const response = await apiRequest(`/api/tasks/${taskId}/complete`, 'PUT');
+            if (!response) return;
+            const result = response.data || {};
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || 'Failed to complete task');
+            }
+            await loadTasks();
+            closeModal('taskModal');
+            showNotification('Task marked as completed', 'success');
+        } catch (error) {
+            console.error('Error completing task:', error);
+            showNotification(error.message || 'Could not complete task', 'error');
+        }
+    }
+
+    //logout
+    //function logout() {
+    // Optional: clear session/local storage
+    //localStorage.clear();
+    //sessionStorage.clear();
+
+    // Prevent going back
+    //window.location.replace('index.html');
+    //}
+
+    // Run on page load
+    //if (!localStorage.getItem('isLoggedIn')) {
+    //window.location.replace('index.html');
+    //}
+
+    //localStorage.setItem('isLoggedIn', 'true');
+    //window.location.href = 'admindashboard.html';
+
+
+
+    function goToPage(page) {
+    closeSidebar();
+
+    setTimeout(() => {
+        window.location.href = page + '.html';
+    }, 300);
+    }
+
+    function logout() {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.replace('index.html');
+    }
+
+
+
+    // CLOSE MODAL
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('show');
+    }
+
+    // SHOW NOTIFICATION
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: ${type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#2196F3'};
+            color: white;
+            border-radius: 8px;
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+            font-weight: 600;
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    // CLOSE MODAL ON OUTSIDE CLICK
+    window.addEventListener('click', (e) => {
+        const modal = document.getElementById('taskModal');
+        if (e.target === modal) {
+            modal.classList.remove('show');
+        }
+    });
+
+    <!-- INIT ON LOAD -->
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+
+<script src="api.js"></script>
+
+</body>
+</html>
